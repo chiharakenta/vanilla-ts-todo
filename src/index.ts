@@ -1,12 +1,15 @@
 /* 関数定義 */
-const createTodo = (text: string) => {
+const createTodoElement = (text: string) => {
   // todoの作成
-  const todo = document.createElement('li');
-  todo.textContent = text;
+  const todoElement = document.createElement('li');
+  todoElement.textContent = text;
+  return todoElement;
+};
 
+const appendTodo = (todoElement: HTMLLIElement) => {
   // todoの追加
   const todoList = document.getElementById('todoList') as HTMLUListElement;
-  todoList.appendChild(todo);
+  todoList.appendChild(todoElement);
 };
 
 const clearForm = (todoInput: HTMLInputElement) => {
@@ -20,7 +23,8 @@ todoForm.onsubmit = (event) => {
   event.preventDefault();
   const todoInput = document.getElementById('todoInput') as HTMLInputElement;
   const todoText = todoInput.value;
-  createTodo(todoText);
+  const todoElement = createTodoElement(todoText);
+  appendTodo(todoElement);
   clearForm(todoInput);
 };
 /* メイン処理ここまで */
