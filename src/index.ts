@@ -2,21 +2,43 @@ const TODO_FORM_ELEMENT_ID = 'todoForm';
 const TODO_INPUT_ELEMENT_ID = 'todoInput';
 const TODO_LIST_ELEMENT_ID = 'todos';
 
+interface Todo {
+  id: number;
+  content: string;
+}
+
 const clearForm = () => {
   const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
   todoInputElement.value = '';
+};
+
+const getTodos: () => Array<Todo> = () => {
+  const todos = localStorage.getItem('todos');
+  if (!todos) return [];
+  return JSON.parse(todos);
 };
 
 const createTodo = () => {
   const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
   const todoContent = todoInputElement.value;
 
-  const todos = localStorage.getItem('todos');
-  if (!todos) {
-    localStorage.setItem('todos', todoContent);
+  const todos = getTodos();
+  if (!todos.length) {
+    const newTodos: Array<Todo> = [
+      {
+        id: Date.now(),
+        content: todoContent
+      }
+    ];
+    localStorage.setItem('todos', JSON.stringify(newTodos));
     return;
   }
-  localStorage.setItem('todos', `${todos},${todoContent}`);
+  const newTodo = {
+    id: Date.now(),
+    content: todoContent
+  };
+  todos.push(newTodo);
+  localStorage.setItem('todos', JSON.stringify(todos));
 };
 
 const renderTodos = () => {
@@ -25,13 +47,39 @@ const renderTodos = () => {
   todoListElement.innerHTML = '';
 
   // 保存されたtodoが1つも無ければ終了
-  const todos: Array<string> | undefined = localStorage.getItem(TODO_LIST_ELEMENT_ID)?.split(',');
-  if (!todos) return;
+  const todos = getTodos();
+  if (!todos.length) return;
 
   // todoをすべてリストに追加
-  todos.forEach((todoContent) => {
+  todos.forEach((todo) => {
     const todoElement = document.createElement('li');
-    todoElement.textContent = todoContent;
+
+    // <span>${todoContent}</span>
+    const todoContentElement = document.createElement('span');
+    todoContentElement.textContent = todo.content;
+
+    // <button class="todo-complete-button" >完了</button>
+    const todoCompleteButtonElement = document.createElement('button');
+    todoCompleteButtonElement.textContent = '完了';
+    todoCompleteButtonElement.id = String(todo.id);
+    todoCompleteButtonElement.classList.add('todo-complete-button');
+    todoCompleteButtonElement.onclick = function () {
+      const todoId = parseInt((this as HTMLButtonElement).id);
+      const todos = getTodos();
+      const newTodos = todos.filter((todo) => todo.id !== todoId);
+      localStorage.setItem('todos', JSON.stringify(newTodos));
+      renderTodos();
+    };
+
+    /*
+    <li>
+      <span>${todoContent}</span>
+      <button class="todo-complete-button" >完了</button>
+    </li> 
+    */
+    todoElement.appendChild(todoContentElement);
+    todoElement.appendChild(todoCompleteButtonElement);
+
     todoListElement.appendChild(todoElement);
   });
 };
