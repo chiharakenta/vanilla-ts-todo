@@ -41,6 +41,14 @@ const createTodo = () => {
   localStorage.setItem('todos', JSON.stringify(todos));
 };
 
+const deleteTodo = (event: MouseEvent) => {
+  const todoId = parseInt((event.currentTarget as HTMLButtonElement).id);
+  const todos = getTodos();
+  const newTodos = todos.filter((todo) => todo.id !== todoId);
+  localStorage.setItem('todos', JSON.stringify(newTodos));
+  renderTodos();
+};
+
 const renderTodos = () => {
   // todoリストを消去
   const todoListElement = document.getElementById('todoList') as HTMLUListElement;
@@ -63,13 +71,7 @@ const renderTodos = () => {
     todoCompleteButtonElement.textContent = '完了';
     todoCompleteButtonElement.id = String(todo.id);
     todoCompleteButtonElement.classList.add('todo-complete-button');
-    todoCompleteButtonElement.onclick = function () {
-      const todoId = parseInt((this as HTMLButtonElement).id);
-      const todos = getTodos();
-      const newTodos = todos.filter((todo) => todo.id !== todoId);
-      localStorage.setItem('todos', JSON.stringify(newTodos));
-      renderTodos();
-    };
+    todoCompleteButtonElement.onclick = deleteTodo;
 
     /*
     <li>
@@ -90,6 +92,7 @@ window.onload = renderTodos;
 const todoFormElement = document.getElementById(TODO_FORM_ELEMENT_ID) as HTMLFormElement;
 todoFormElement.onsubmit = (event) => {
   event.preventDefault();
+  console.log(event);
   createTodo();
   clearForm();
   renderTodos();
