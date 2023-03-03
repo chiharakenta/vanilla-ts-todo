@@ -1,30 +1,49 @@
-/* 関数定義 */
-const createTodoElement = (text: string) => {
-  // todoの作成
-  const todoElement = document.createElement('li');
-  todoElement.textContent = text;
-  return todoElement;
+const TODO_FORM_ELEMENT_ID = 'todoForm';
+const TODO_INPUT_ELEMENT_ID = 'todoInput';
+const TODO_LIST_ELEMENT_ID = 'todos';
+
+const clearForm = () => {
+  const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
+  todoInputElement.value = '';
 };
 
-const appendTodo = (todoElement: HTMLLIElement) => {
-  // todoの追加
-  const todoList = document.getElementById('todoList') as HTMLUListElement;
-  todoList.appendChild(todoElement);
+const createTodo = () => {
+  const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
+  const todoContent = todoInputElement.value;
+
+  const todos = localStorage.getItem('todos');
+  if (!todos) {
+    localStorage.setItem('todos', todoContent);
+    return;
+  }
+  localStorage.setItem('todos', `${todos},${todoContent}`);
 };
 
-const clearForm = (todoInput: HTMLInputElement) => {
-  todoInput.value = '';
+const renderTodos = () => {
+  // todoリストを消去
+  const todoListElement = document.getElementById('todoList') as HTMLUListElement;
+  todoListElement.innerHTML = '';
+
+  // 保存されたtodoが1つも無ければ終了
+  const todos: Array<string> | undefined = localStorage.getItem(TODO_LIST_ELEMENT_ID)?.split(',');
+  if (!todos) return;
+
+  // todoをすべてリストに追加
+  todos.forEach((todoContent) => {
+    const todoElement = document.createElement('li');
+    todoElement.textContent = todoContent;
+    todoListElement.appendChild(todoElement);
+  });
 };
-/* 関数定義ここまで */
 
 /* メイン処理 */
-const todoForm = document.getElementById('todoForm') as HTMLFormElement;
-todoForm.onsubmit = (event) => {
+window.onload = renderTodos;
+
+const todoFormElement = document.getElementById(TODO_FORM_ELEMENT_ID) as HTMLFormElement;
+todoFormElement.onsubmit = (event) => {
   event.preventDefault();
-  const todoInput = document.getElementById('todoInput') as HTMLInputElement;
-  const todoText = todoInput.value;
-  const todoElement = createTodoElement(todoText);
-  appendTodo(todoElement);
-  clearForm(todoInput);
+  createTodo();
+  clearForm();
+  renderTodos();
 };
-/* メイン処理ここまで */
+/* メイン処理終わり */
