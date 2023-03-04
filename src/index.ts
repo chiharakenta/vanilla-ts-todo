@@ -70,8 +70,25 @@ const deleteTodo = (event: MouseEvent) => {
   renderTodos();
 };
 
+const createTodoContentElement = (todoContent: string) => {
+  const todoContentElement = document.createElement('span');
+  todoContentElement.textContent = todoContent;
+  // <span>${todoContent}</span>
+  return todoContentElement;
+};
+
+const createTodoCompleteButtonElement = (todoId: string) => {
+  const todoCompleteButtonElement = document.createElement('button');
+  todoCompleteButtonElement.textContent = '完了';
+  todoCompleteButtonElement.id = todoId;
+  todoCompleteButtonElement.classList.add('todo-complete-button');
+  todoCompleteButtonElement.onclick = completeTodo;
+  // <button id="${todo.id}" class="todo-complete-button">完了</button>
+  return todoCompleteButtonElement;
+};
+
 const renderTodos = () => {
-  // todoリストを消去
+  // todoリスト内を一度空にする
   const todoListElement = document.getElementById(TODO_LIST_ELEMENT_ID) as HTMLUListElement;
   todoListElement.innerHTML = '';
   const todoCompleteListElement = document.getElementById(
@@ -87,18 +104,13 @@ const renderTodos = () => {
   todos.forEach((todo) => {
     const todoElement = document.createElement('li');
 
-    // <span>${todoContent}</span>
-    const todoContentElement = document.createElement('span');
-    todoContentElement.textContent = todo.content;
+    // <span>${todo.content}</span>
+    const todoContentElement = createTodoContentElement(todo.content);
     todoElement.appendChild(todoContentElement);
 
     if (!todo.completed) {
-      // <button class="todo-complete-button" >完了</button>
-      const todoCompleteButtonElement = document.createElement('button');
-      todoCompleteButtonElement.textContent = '完了';
-      todoCompleteButtonElement.id = String(todo.id);
-      todoCompleteButtonElement.classList.add('todo-complete-button');
-      todoCompleteButtonElement.onclick = completeTodo;
+      // <button id="${todo.id}" class="todo-complete-button">完了</button>
+      const todoCompleteButtonElement = createTodoCompleteButtonElement(String(todo.id));
       todoElement.appendChild(todoCompleteButtonElement);
     }
 
