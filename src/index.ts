@@ -1,10 +1,12 @@
 const TODO_FORM_ELEMENT_ID = 'todoForm';
 const TODO_INPUT_ELEMENT_ID = 'todoInput';
-const TODO_LIST_ELEMENT_ID = 'todos';
+const TODO_LIST_ELEMENT_ID = 'todoList';
+const TODO_COMPLETE_LIST_ELEMENT_ID = 'todoCompleteList';
 
 interface Todo {
   id: number;
   content: string;
+  completed: boolean;
 }
 
 const clearForm = () => {
@@ -18,6 +20,14 @@ const getTodos: () => Array<Todo> = () => {
   return JSON.parse(todos);
 };
 
+const getTodoIndex = (todos: Array<Todo>, id: number) => {
+  for (let i = 0; i < todos.length; i++) {
+    if (todos[i].id === id) {
+      return i;
+    }
+  }
+};
+
 const createTodo = () => {
   const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
   const todoContent = todoInputElement.value;
@@ -27,7 +37,8 @@ const createTodo = () => {
     const newTodos: Array<Todo> = [
       {
         id: Date.now(),
-        content: todoContent
+        content: todoContent,
+        completed: false
       }
     ];
     localStorage.setItem('todos', JSON.stringify(newTodos));
@@ -35,10 +46,20 @@ const createTodo = () => {
   }
   const newTodo = {
     id: Date.now(),
-    content: todoContent
+    content: todoContent,
+    completed: false
   };
   todos.push(newTodo);
   localStorage.setItem('todos', JSON.stringify(todos));
+};
+
+const completeTodo = (event: MouseEvent) => {
+  const todoId = parseInt((event.currentTarget as HTMLButtonElement).id);
+  const newTodos = getTodos();
+  const newTodoIndex = getTodoIndex(newTodos, todoId)!;
+  newTodos[newTodoIndex].completed = true;
+  localStorage.setItem('todos', JSON.stringify(newTodos));
+  renderTodos();
 };
 
 const deleteTodo = (event: MouseEvent) => {
@@ -51,8 +72,12 @@ const deleteTodo = (event: MouseEvent) => {
 
 const renderTodos = () => {
   // todoリストを消去
-  const todoListElement = document.getElementById('todoList') as HTMLUListElement;
+  const todoListElement = document.getElementById(TODO_LIST_ELEMENT_ID) as HTMLUListElement;
   todoListElement.innerHTML = '';
+  const todoCompleteListElement = document.getElementById(
+    TODO_COMPLETE_LIST_ELEMENT_ID
+  ) as HTMLUListElement;
+  todoCompleteListElement.innerHTML = '';
 
   // 保存されたtodoが1つも無ければ終了
   const todos = getTodos();
@@ -65,24 +90,20 @@ const renderTodos = () => {
     // <span>${todoContent}</span>
     const todoContentElement = document.createElement('span');
     todoContentElement.textContent = todo.content;
-
-    // <button class="todo-complete-button" >完了</button>
-    const todoCompleteButtonElement = document.createElement('button');
-    todoCompleteButtonElement.textContent = '完了';
-    todoCompleteButtonElement.id = String(todo.id);
-    todoCompleteButtonElement.classList.add('todo-complete-button');
-    todoCompleteButtonElement.onclick = deleteTodo;
-
-    /*
-    <li>
-      <span>${todoContent}</span>
-      <button class="todo-complete-button" >完了</button>
-    </li> 
-    */
     todoElement.appendChild(todoContentElement);
-    todoElement.appendChild(todoCompleteButtonElement);
 
-    todoListElement.appendChild(todoElement);
+    if (!todo.completed) {
+      // <button class="todo-complete-button" >完了</button>
+      const todoCompleteButtonElement = document.createElement('button');
+      todoCompleteButtonElement.textContent = '完了';
+      todoCompleteButtonElement.id = String(todo.id);
+      todoCompleteButtonElement.classList.add('todo-complete-button');
+      todoCompleteButtonElement.onclick = completeTodo;
+      todoElement.appendChild(todoCompleteButtonElement);
+    }
+
+    if (!todo.completed) todoListElement.appendChild(todoElement);
+    if (todo.completed) todoCompleteListElement.appendChild(todoElement);
   });
 };
 
@@ -92,7 +113,6 @@ window.onload = renderTodos;
 const todoFormElement = document.getElementById(TODO_FORM_ELEMENT_ID) as HTMLFormElement;
 todoFormElement.onsubmit = (event) => {
   event.preventDefault();
-  console.log(event);
   createTodo();
   clearForm();
   renderTodos();
