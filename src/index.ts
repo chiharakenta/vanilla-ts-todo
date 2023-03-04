@@ -53,8 +53,7 @@ const createTodo = () => {
   localStorage.setItem('todos', JSON.stringify(todos));
 };
 
-const completeTodo = (event: MouseEvent) => {
-  const todoId = parseInt((event.currentTarget as HTMLButtonElement).id);
+const completeTodo = (todoId: number) => {
   const newTodos = getTodos();
   const newTodoIndex = getTodoIndex(newTodos, todoId)!;
   newTodos[newTodoIndex].completed = true;
@@ -62,8 +61,15 @@ const completeTodo = (event: MouseEvent) => {
   renderTodos();
 };
 
-const deleteTodo = (event: MouseEvent) => {
-  const todoId = parseInt((event.currentTarget as HTMLButtonElement).id);
+const backTodo = (todoId: number) => {
+  const newTodos = getTodos();
+  const newTodoIndex = getTodoIndex(newTodos, todoId)!;
+  newTodos[newTodoIndex].completed = false;
+  localStorage.setItem('todos', JSON.stringify(newTodos));
+  renderTodos();
+};
+
+const deleteTodo = (todoId: number) => {
   const todos = getTodos();
   const newTodos = todos.filter((todo) => todo.id !== todoId);
   localStorage.setItem('todos', JSON.stringify(newTodos));
@@ -81,10 +87,27 @@ const createTodoCompleteButtonElement = (todoId: string) => {
   const todoCompleteButtonElement = document.createElement('button');
   todoCompleteButtonElement.textContent = '完了';
   todoCompleteButtonElement.id = todoId;
-  todoCompleteButtonElement.classList.add('todo-complete-button');
-  todoCompleteButtonElement.onclick = completeTodo;
+  todoCompleteButtonElement.onclick = () => completeTodo(parseInt(todoId));
   // <button id="${todo.id}" class="todo-complete-button">完了</button>
   return todoCompleteButtonElement;
+};
+
+const createTodoBackButtonElement = (todoId: string) => {
+  const todoCompleteButtonElement = document.createElement('button');
+  todoCompleteButtonElement.textContent = '戻す';
+  todoCompleteButtonElement.id = todoId;
+  todoCompleteButtonElement.onclick = () => backTodo(parseInt(todoId));
+  // <button id="${todo.id}">戻す</button>
+  return todoCompleteButtonElement;
+};
+
+const createTodoDeleteButtonElement = (todoId: string) => {
+  const todoDeleteButtonElement = document.createElement('button');
+  todoDeleteButtonElement.textContent = '削除';
+  todoDeleteButtonElement.id = todoId;
+  todoDeleteButtonElement.onclick = () => deleteTodo(parseInt(todoId));
+  // <button id="${todo.id}">削除</button>
+  return todoDeleteButtonElement;
 };
 
 const renderTodos = () => {
@@ -112,10 +135,18 @@ const renderTodos = () => {
       // <button id="${todo.id}" class="todo-complete-button">完了</button>
       const todoCompleteButtonElement = createTodoCompleteButtonElement(String(todo.id));
       todoElement.appendChild(todoCompleteButtonElement);
+      const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
+      todoElement.appendChild(todoDeleteButtonElement);
+      todoListElement.appendChild(todoElement);
     }
 
-    if (!todo.completed) todoListElement.appendChild(todoElement);
-    if (todo.completed) todoCompleteListElement.appendChild(todoElement);
+    if (todo.completed) {
+      const todoBackButtonElement = createTodoBackButtonElement(String(todo.id));
+      todoElement.appendChild(todoBackButtonElement);
+      const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
+      todoElement.appendChild(todoDeleteButtonElement);
+      todoCompleteListElement.appendChild(todoElement);
+    }
   });
 };
 
