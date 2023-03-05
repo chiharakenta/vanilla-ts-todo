@@ -84,18 +84,21 @@ const createTodoContentElement = (todoContent: string) => {
 };
 
 const createTodoCompleteButtonElement = (todoId: string) => {
-  const todoCompleteButtonElement = document.createElement('button');
-  todoCompleteButtonElement.textContent = '完了';
+  const todoCompleteButtonElement = document.createElement('input');
+  todoCompleteButtonElement.type = 'checkbox';
   todoCompleteButtonElement.id = todoId;
+  todoCompleteButtonElement.className = 'todo-check-button';
   todoCompleteButtonElement.onclick = () => completeTodo(parseInt(todoId));
   // <button id="${todo.id}" class="todo-complete-button">完了</button>
   return todoCompleteButtonElement;
 };
 
 const createTodoBackButtonElement = (todoId: string) => {
-  const todoCompleteButtonElement = document.createElement('button');
-  todoCompleteButtonElement.textContent = '戻す';
+  const todoCompleteButtonElement = document.createElement('input');
+  todoCompleteButtonElement.type = 'checkbox';
+  todoCompleteButtonElement.checked = true;
   todoCompleteButtonElement.id = todoId;
+  todoCompleteButtonElement.className = 'todo-check-button';
   todoCompleteButtonElement.onclick = () => backTodo(parseInt(todoId));
   // <button id="${todo.id}">戻す</button>
   return todoCompleteButtonElement;
@@ -126,25 +129,27 @@ const renderTodos = () => {
   // todoをすべてリストに追加
   todos.forEach((todo) => {
     const todoElement = document.createElement('li');
+    todoElement.className = 'todo';
 
     // <span>${todo.content}</span>
     const todoContentElement = createTodoContentElement(todo.content);
-    todoElement.appendChild(todoContentElement);
 
     if (!todo.completed) {
       // <button id="${todo.id}" class="todo-complete-button">完了</button>
       const todoCompleteButtonElement = createTodoCompleteButtonElement(String(todo.id));
       todoElement.appendChild(todoCompleteButtonElement);
+      todoElement.appendChild(todoContentElement);
       const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
-      todoElement.appendChild(todoDeleteButtonElement);
+      // todoElement.appendChild(todoDeleteButtonElement);
       todoListElement.appendChild(todoElement);
     }
 
     if (todo.completed) {
       const todoBackButtonElement = createTodoBackButtonElement(String(todo.id));
       todoElement.appendChild(todoBackButtonElement);
-      const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
-      todoElement.appendChild(todoDeleteButtonElement);
+      todoElement.appendChild(todoContentElement);
+      // const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
+      // todoElement.appendChild(todoDeleteButtonElement);
       todoCompleteListElement.appendChild(todoElement);
     }
   });
