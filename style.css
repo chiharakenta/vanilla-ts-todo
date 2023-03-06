@@ -21,16 +21,23 @@ li {
   }
 }
 
+.todo-list,
+.todo-complete-list {
+  border-top: solid 0.5px #ddd;
+  border-bottom: solid 0.5px #ddd;
+  border-left: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+  min-height: 100px;
+  box-sizing: border-box;
+}
+
 .todo {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-  border-top: solid 1px #ddd;
   display: flex;
   align-items: center;
-}
-
-.todo:last-of-type {
-  border-bottom: solid 1px #ddd;
+  border-top: solid 0.5px #ddd;
+  border-bottom: solid 0.5px #ddd;
 }
 
 .todo-check-button {

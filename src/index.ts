@@ -76,6 +76,17 @@ const deleteTodo = (todoId: number) => {
   renderTodos();
 };
 
+const createTodoElement = (todo: Todo) => {
+  const todoElement = document.createElement('li');
+  todoElement.className = 'todo';
+  todoElement.draggable = true;
+  todoElement.ondragstart = (event) => {
+    const { id, content, completed } = todo;
+    event.dataTransfer?.setData('text/plain', JSON.stringify({ id, content, completed }));
+  };
+  return todoElement;
+};
+
 const createTodoContentElement = (todoContent: string) => {
   const todoContentElement = document.createElement('span');
   todoContentElement.textContent = todoContent;
@@ -128,8 +139,7 @@ const renderTodos = () => {
 
   // todoをすべてリストに追加
   todos.forEach((todo) => {
-    const todoElement = document.createElement('li');
-    todoElement.className = 'todo';
+    const todoElement = createTodoElement(todo);
 
     // <span>${todo.content}</span>
     const todoContentElement = createTodoContentElement(todo.content);
@@ -164,5 +174,25 @@ todoFormElement.onsubmit = (event) => {
   createTodo();
   clearForm();
   renderTodos();
+};
+
+const todoList = document.getElementById(TODO_LIST_ELEMENT_ID) as HTMLUListElement;
+todoList.ondragover = (event) => event.preventDefault();
+todoList.ondragenter = (event) => event.preventDefault();
+todoList.ondrop = (event) => {
+  const todoPlainText = event.dataTransfer?.getData('text/plain');
+  if (!todoPlainText) return;
+  const todo = JSON.parse(todoPlainText) as Todo;
+  if (todo.completed) backTodo(todo.id);
+};
+
+const todoCompleteList = document.getElementById(TODO_COMPLETE_LIST_ELEMENT_ID) as HTMLUListElement;
+todoCompleteList.ondragover = (event) => event.preventDefault();
+todoCompleteList.ondragenter = (event) => event.preventDefault();
+todoCompleteList.ondrop = (event) => {
+  const todoPlainText = event.dataTransfer?.getData('text/plain');
+  if (!todoPlainText) return;
+  const todo = JSON.parse(todoPlainText) as Todo;
+  if (!todo.completed) completeTodo(todo.id);
 };
 /* メイン処理終わり */
