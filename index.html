@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Todo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Todoリスト</h1>
+      </div>
+    </header>
+    <div class="container">
+      <form id="todoForm">
+        <input type="text" id="todoInput" />
+        <input type="submit" value="送信" />
+      </form>
+    </div>
+    <div class="container">
+      <h2>Todo一覧</h2>
+      <ul id="todoList" class="todo-list"></ul>
+    </div>
+    <div class="container">
+      <h2>完了済</h2>
+      <ul id="todoCompleteList" class="todo-complete-list"></ul>
+    </div>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
