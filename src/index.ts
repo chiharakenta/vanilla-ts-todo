@@ -1,18 +1,11 @@
-const TODO_FORM_ELEMENT_ID = 'todoForm';
-const TODO_INPUT_ELEMENT_ID = 'todoInput';
-const TODO_LIST_ELEMENT_ID = 'todoList';
-const TODO_COMPLETE_LIST_ELEMENT_ID = 'todoCompleteList';
-
-interface Todo {
-  id: number;
-  content: string;
-  completed: boolean;
-}
-
-const clearForm = () => {
-  const todoInputElement = document.getElementById(TODO_INPUT_ELEMENT_ID) as HTMLInputElement;
-  todoInputElement.value = '';
-};
+import {
+  TODO_COMPLETE_LIST_ELEMENT_ID,
+  TODO_FORM_ELEMENT_ID,
+  TODO_INPUT_ELEMENT_ID,
+  TODO_LIST_ELEMENT_ID
+} from './constant/elementId';
+import { Todo } from './type/Todo';
+import { clearForm } from './util/clearForm';
 
 const getTodos: () => Array<Todo> = () => {
   const todos = localStorage.getItem('todos');
@@ -66,14 +59,12 @@ const backTodo = (todoId: number) => {
   const newTodoIndex = getTodoIndex(newTodos, todoId)!;
   newTodos[newTodoIndex].completed = false;
   localStorage.setItem('todos', JSON.stringify(newTodos));
-  renderTodos();
 };
 
 const deleteTodo = (todoId: number) => {
   const todos = getTodos();
   const newTodos = todos.filter((todo) => todo.id !== todoId);
   localStorage.setItem('todos', JSON.stringify(newTodos));
-  renderTodos();
 };
 
 const createTodoElement = (todo: Todo) => {
@@ -99,7 +90,10 @@ const createTodoCompleteButtonElement = (todoId: string) => {
   todoCompleteButtonElement.type = 'checkbox';
   todoCompleteButtonElement.id = todoId;
   todoCompleteButtonElement.className = 'todo-check-button';
-  todoCompleteButtonElement.onclick = () => completeTodo(parseInt(todoId));
+  todoCompleteButtonElement.onclick = () => {
+    completeTodo(parseInt(todoId));
+    renderTodos();
+  };
   // <button id="${todo.id}" class="todo-complete-button">完了</button>
   return todoCompleteButtonElement;
 };
@@ -110,7 +104,10 @@ const createTodoBackButtonElement = (todoId: string) => {
   todoCompleteButtonElement.checked = true;
   todoCompleteButtonElement.id = todoId;
   todoCompleteButtonElement.className = 'todo-check-button';
-  todoCompleteButtonElement.onclick = () => backTodo(parseInt(todoId));
+  todoCompleteButtonElement.onclick = () => {
+    backTodo(parseInt(todoId));
+    renderTodos();
+  };
   // <button id="${todo.id}">戻す</button>
   return todoCompleteButtonElement;
 };
@@ -172,7 +169,7 @@ const todoFormElement = document.getElementById(TODO_FORM_ELEMENT_ID) as HTMLFor
 todoFormElement.onsubmit = (event) => {
   event.preventDefault();
   createTodo();
-  clearForm();
+  clearForm(TODO_INPUT_ELEMENT_ID);
   renderTodos();
 };
 
@@ -183,7 +180,10 @@ todoList.ondrop = (event) => {
   const todoPlainText = event.dataTransfer?.getData('text/plain');
   if (!todoPlainText) return;
   const todo = JSON.parse(todoPlainText) as Todo;
-  if (todo.completed) backTodo(todo.id);
+  if (todo.completed) {
+    backTodo(todo.id);
+    renderTodos();
+  }
 };
 
 const todoCompleteList = document.getElementById(TODO_COMPLETE_LIST_ELEMENT_ID) as HTMLUListElement;
@@ -193,6 +193,9 @@ todoCompleteList.ondrop = (event) => {
   const todoPlainText = event.dataTransfer?.getData('text/plain');
   if (!todoPlainText) return;
   const todo = JSON.parse(todoPlainText) as Todo;
-  if (!todo.completed) completeTodo(todo.id);
+  if (!todo.completed) {
+    completeTodo(todo.id);
+    renderTodos();
+  }
 };
 /* メイン処理終わり */

@@ -38,6 +38,7 @@ li {
   align-items: center;
   border-top: solid 0.5px #ddd;
   border-bottom: solid 0.5px #ddd;
+  cursor: pointer;
 }
 
 .todo-check-button {
