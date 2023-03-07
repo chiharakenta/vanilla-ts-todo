@@ -116,7 +116,10 @@ const createTodoDeleteButtonElement = (todoId: string) => {
   const todoDeleteButtonElement = document.createElement('button');
   todoDeleteButtonElement.textContent = '削除';
   todoDeleteButtonElement.id = todoId;
-  todoDeleteButtonElement.onclick = () => deleteTodo(parseInt(todoId));
+  todoDeleteButtonElement.onclick = () => {
+    deleteTodo(parseInt(todoId));
+    renderTodos();
+  };
   // <button id="${todo.id}">削除</button>
   return todoDeleteButtonElement;
 };
@@ -147,7 +150,7 @@ const renderTodos = () => {
       todoElement.appendChild(todoCompleteButtonElement);
       todoElement.appendChild(todoContentElement);
       const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
-      // todoElement.appendChild(todoDeleteButtonElement);
+      todoElement.appendChild(todoDeleteButtonElement);
       todoListElement.appendChild(todoElement);
     }
 
@@ -155,8 +158,8 @@ const renderTodos = () => {
       const todoBackButtonElement = createTodoBackButtonElement(String(todo.id));
       todoElement.appendChild(todoBackButtonElement);
       todoElement.appendChild(todoContentElement);
-      // const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
-      // todoElement.appendChild(todoDeleteButtonElement);
+      const todoDeleteButtonElement = createTodoDeleteButtonElement(String(todo.id));
+      todoElement.appendChild(todoDeleteButtonElement);
       todoCompleteListElement.appendChild(todoElement);
     }
   });
